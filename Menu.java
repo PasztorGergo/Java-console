@@ -115,6 +115,12 @@ public class Menu {
         }
     }
 
+    private void MakeDir(String dirName){
+        final String formattedDirName = dirName.replaceAll("\"", "");
+        File nextDir = new File(wd, formattedDirName);
+        nextDir.mkdir();
+    }
+
     private void MenuCases(String[] command){
         switch (command[0]) {
             case "exit":
@@ -148,6 +154,14 @@ public class Menu {
                     System.err.println("Too few arguments!\nUsage:\nwc <file>");
                 }else{
                     Wc(command[1]);
+                }
+                break;
+            case "mkdir":
+                if(command.length < 2){
+                    System.err.println("Too few arguments!\nUsage:\nmkdir <directory-name>");
+                }
+                else{
+                    MakeDir(command[1]);
                 }
                 break;
             case "":
