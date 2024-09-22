@@ -60,8 +60,8 @@ public class Menu {
         File currentFile = new File(wd, currentName.replaceAll("\"", ""));
         if(!checkFileExistance(currentFile))
             return;
-
-        File newFile = new File(wd, newName);
+        final String formattedNextFileName = newName.replaceAll("\"", "");
+        File newFile = new File(wd, formattedNextFileName);
 
         try {
             currentFile.renameTo(newFile);
@@ -89,7 +89,8 @@ public class Menu {
     }
 
     private void Cat(String fileName){
-        File fileToLog = new File(wd, fileName);
+        final String formattedFileName = fileName.replaceAll("\"", "");
+        File fileToLog = new File(wd, formattedFileName);
 
         try {
             System.out.println(readFile(fileToLog));
@@ -99,14 +100,15 @@ public class Menu {
     }
 
     private void Wc(String fileName){
-        File fileToScan = new File(wd, fileName);
+        final String formattedFileName = fileName.replaceAll("\"", "");
+        File fileToScan = new File(wd, formattedFileName);
 
         try {
             final String lines = readFile(fileToScan);
 
             System.out.printf("%s/%s\nNumber of lines: %d\nNumber of words: %d\nNumber of characters: %d\n",
             wd.getName(),
-            fileName,
+            formattedFileName,
             lines.split("\n").length,
             lines.split(" ").length,
             lines.toCharArray().length);
@@ -119,6 +121,17 @@ public class Menu {
         final String formattedDirName = dirName.replaceAll("\"", "");
         File nextDir = new File(wd, formattedDirName);
         nextDir.mkdir();
+    }
+
+    private void Touch(String fileName){
+        final String formattedFileName = fileName.replaceAll("\"", "");
+        File nextFile = new File(wd, fileName);
+
+        try {
+            nextFile.createNewFile();
+        } catch (IOException e) {
+            System.err.printf("Could not create file at \'%s/%s\'", wd.getName(), formattedFileName);
+        }
     }
 
     private void MenuCases(String[] command){
@@ -162,6 +175,13 @@ public class Menu {
                 }
                 else{
                     MakeDir(command[1]);
+                }
+                break;
+            case "touch":
+                if(command.length < 2){
+                    System.err.println("Too few arguments!\nUsage:\nmkdir <file>");
+                }else{
+                    Touch(command[1]);
                 }
                 break;
             case "":
