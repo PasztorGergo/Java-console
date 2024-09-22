@@ -77,18 +77,41 @@ public class Menu {
         return commandAndParameters;
     }
 
+    private String readFile(File file) throws FileNotFoundException{
+        Scanner fileScanner = new Scanner(file);
+        String lines = "";
+        while(fileScanner.hasNextLine()){
+            lines += fileScanner.nextLine();
+            lines += "\n";
+        }
+        fileScanner.close();
+        return lines;
+    }
+
     private void Cat(String fileName){
         File fileToLog = new File(wd, fileName);
 
         try {
-            Scanner fileScanner = new Scanner(fileToLog);
-            while(fileScanner.hasNextLine()){
-                System.out.println(fileScanner.nextLine());
-            }
-
-            fileScanner.close();
+            System.out.println(readFile(fileToLog));
         } catch (FileNotFoundException e) {
             System.err.printf("%s does not exsist\n", fileToLog.getName());
+        }
+    }
+
+    private void Wc(String fileName){
+        File fileToScan = new File(wd, fileName);
+
+        try {
+            final String lines = readFile(fileToScan);
+
+            System.out.printf("%s/%s\nNumber of lines: %d\nNumber of words: %d\nNumber of characters: %d\n",
+            wd.getName(),
+            fileName,
+            lines.split("\n").length,
+            lines.split(" ").length,
+            lines.toCharArray().length);
+        } catch (FileNotFoundException e) {
+            System.err.printf("%s does not exsist\n", fileToScan.getName());
         }
     }
 
@@ -121,6 +144,13 @@ public class Menu {
                 }
                 break;
             case "wc":
+                if(command.length < 2){
+                    System.err.println("Too few arguments!\nUsage:\nwc <file>");
+                }else{
+                    Wc(command[1]);
+                }
+                break;
+            case "":
                 break;
             default:
                 System.err.printf("bash: %s: command not found\n", command);
