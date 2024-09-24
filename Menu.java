@@ -70,10 +70,48 @@ public class Menu {
         }
     }
 
+    private String[] concatFileName(String[] words){
+        boolean hasStarted = false;
+        String fileName = "";
+        int startIndex = 0;
+        int endIndex = 0;
+        for(int i = 0; i<words.length; i++){
+            if(!hasStarted & words[i].startsWith("\"")){
+                hasStarted = true;
+                startIndex = i;
+                fileName += words[i] + " ";
+            }
+            else if(hasStarted && words[i].endsWith("\"")){
+                fileName += words[i];
+                endIndex = i;
+                break;
+            }
+            else if(hasStarted){
+                fileName += words[i] + " ";
+            } 
+        }
+
+        if(endIndex == 0)
+           return words; 
+
+        String[] modified = new String[words.length - (endIndex - startIndex)];
+        for(int i = 0; i < startIndex; i++){
+            modified[i] = words[i];
+        }
+
+        modified[startIndex] = fileName.replaceAll("\"", "");
+
+        for(int i = endIndex+1; i < words.length; i++){
+            modified[i-endIndex+startIndex] = words[i]; 
+        }
+        return modified;
+    }
+
     private String[] ProcessCommand(){
         Scanner scanner = new Scanner(System.in);
 
         String[] commandAndParameters = scanner.nextLine().split(" ");
+        
         return commandAndParameters;
     }
 
@@ -146,27 +184,36 @@ public class Menu {
                 Ls(command.length > 1 ? command[1] : "");
                 break;
             case "cd":
-                Cd(command[1]);
+                if(command.length < 2){
+                    System.err.println("Too few arguments!\nUsage:\ncd <folder>");
+                }
+                else{
+                    String[] cmd = concatFileName(command);
+                    Cd(cmd[1]);
+                }
                 break;
             case "mv":
                 if(command.length < 3){
                     System.err.println("Too few arguments!\nUsage:\nmv <existing-file> <new-file>");
                 }else{
-                    Mv(command[1], command[2]);
+                    String[] cmd = concatFileName(command);
+                    Mv(cmd[1], cmd[2]);
                 }
                 break;
             case "cat":
                 if(command.length < 2){
                     System.err.println("Too few arguments!\nUsage:\ncat <file>");
                 }else{
-                    Cat(command[1]);
+                    String[] cmd = concatFileName(command);
+                    Cat(cmd[1]);
                 }
                 break;
             case "wc":
                 if(command.length < 2){
                     System.err.println("Too few arguments!\nUsage:\nwc <file>");
                 }else{
-                    Wc(command[1]);
+                    String[] cmd = concatFileName(command);
+                    Wc(cmd[1]);
                 }
                 break;
             case "mkdir":
@@ -174,14 +221,16 @@ public class Menu {
                     System.err.println("Too few arguments!\nUsage:\nmkdir <directory-name>");
                 }
                 else{
-                    MakeDir(command[1]);
+                    String[] cmd = concatFileName(command);
+                    MakeDir(cmd[1]);
                 }
                 break;
             case "touch":
                 if(command.length < 2){
                     System.err.println("Too few arguments!\nUsage:\nmkdir <file>");
                 }else{
-                    Touch(command[1]);
+                    String[] cmd = concatFileName(command);
+                    Touch(cmd[1]);
                 }
                 break;
             case "":
